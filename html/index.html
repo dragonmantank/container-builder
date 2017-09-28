@@ -1,0 +1,311 @@
+<html>
+    <head>
+        <title>Container-Builder.com - Docker Compose Skeletons for Projects</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans|Oswald|Archivo+Black" rel="stylesheet">
+
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+        <script src="https://use.fontawesome.com/e33ac26142.js"></script>
+        <style>
+
+            h1, h2, h3, h4 { font-family: 'Oswald', sans-serif; }
+
+            html, body { font-family: 'Open Sans', sans-serif;}
+
+            h3 a { font-size: .65em; font-weight: normal }
+
+            h2:before {
+                display: block;
+                content: " ";
+                margin-top: -90px;
+                height: 90px;
+                visibility: hidden;
+            }
+
+            .fade-enter-active, .fade-leave-active {
+            transition: opacity .5s
+            }
+            .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+            opacity: 0
+            }
+
+            .portset {margin: 10px; padding: 10px}
+
+            .list-group-item { background-color: #f6f6f6 }
+
+            .section-heading { background-color: #00b1b3; color: white; padding: 20px; margin-bottom: .5em }
+
+            .section-heading h2 { margin-bottom: 0; }
+
+            .navbar-brand { font-family: 'Archivo Black', sans-serif; }
+
+            .form-row { margin: 5px }
+
+            #content { margin-top: 70px; }
+
+            #side-navbar { position: fixed; }
+        </style>
+    </head>
+
+    <body>
+
+        <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark justify-content-between">
+            <a class="navbar-brand" href="/">Container-Builder.com</a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about.html">About</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div id="content" class="container-fluid">
+            <div class="row">
+                <div class="col-2 h-100">
+                    <div  id="side-navbar" class="col-1" style="max-width: 15%">
+                        <ul class="list-group">
+                            <li class="list-group-item"><a href="#webserver-header">Web Server</a></li>
+                            <li class="list-group-item"><a href="#php-header">PHP Configuration</a></li>
+                            <li class="list-group-item"><a href="#database-header">Database</a></li>
+                            <li class="list-group-item"><a href="#queues-header">Queues</a></li>
+                            <li class="list-group-item"><a href="#logging-header">Logging</a></li>
+                        </ul>
+
+                        <div class="text-center">
+                            <a href="#" style="margin: 5px" class="btn btn-primary" v-on:click="submit_form">Build Docker Files</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div>
+                        <div class="section-heading">
+                            <h2 id="webserver-header">Web Server</h2>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-2"><label class="form-check-label">Software:</label></div>
+                            <div class="col">
+                                <label class="form-check-label"><input type="radio" class="form-check-input" id="webserver_apache_radio" value="apache" v-model="webserver"> Apache 2.4 + mod_php</label><br/>
+                            </div>
+                        </div>
+            
+                        <div class="form-row">
+                            <div class="col-2"><label class="form-check-label">Ports:</label></div>
+                            <div class="col">
+                                <div>
+                                    <a href="#" v-on:click="add_webserver_port"><i class="fa fa-plus" aria-hidden="true"></i> Add Port</a>
+                                    <portset
+                                            v-for="portset in webserver_ports"
+                                            v-on:removeport="remove_webserver_port(portset.id)"
+                                            v-bind:webserver_ports="webserver_ports"
+                                            v-bind:portset="portset"
+                                            v-bind:key="portset.id">
+                                    </portset>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="col-2"><label class="form-check-label">Mount Points:</label></div>
+                            <div class="col">
+                                <a href="#" v-on:click="add_webserver_mountpoint"><i class="fa fa-plus" aria-hidden="true"></i> Add Volume</a>
+                                <div>
+                                    <mountpoint 
+                                        v-for="mountpoint in webserver_mountpoints"
+                                        v-on:remove="remove_webserver_mountpoint(mountpoint.id)"
+                                        v-bind:mountpoint="mountpoint"
+                                        v-bind:webserver_mountpoints="webserver_mountpoints"
+                                        v-bind:key="mountpoint.id">
+                                    </mountpoint>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="row">
+                            <div class="col">
+                                <div class="section-heading">
+                                    <h2 id="php-header">PHP Configuration</h2>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">PHP Version:</label></div>
+                                    <div class="col">
+                                        <select v-model="php_version">
+                                            <option disabled>EOL Versions</option>
+                                            <option value="5.6">5.6</option>
+                                            <option disabled>Supported Versions</option>
+                                            <option value="7.0">7.0</option>
+                                            <option value="7.1">7.1</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Extensions:</label></div>
+                                    <div class="col">
+                                        <phpplugins
+                                            v-on:tags_changed="php_ext_changed"
+                                            v-bind:php_extensions="php_extensions">
+                                        </phpplugins>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Include Composer?</label></div>
+                                    <div class="col"><input type="checkbox" v-model="composer"></div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Include CLI?</label></div>
+                                    <div class="col"><input type="checkbox" v-model="cli"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="section-heading">
+                                    <h2 id="database-header">Database</h2>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Software:</label></div>
+                                    <div class="col">
+                                        <label class="form-check-label"><input type="radio" class="form-check-input" v-model="database" value="mysql"> MySQL</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Database Version:</label></div>
+                                    <div class="col">
+                                        <select v-model="database_version">
+                                            <option>5.5</option>
+                                            <option>5.6</option>
+                                            <option>5.7</option>
+                                            <option>8.0</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Environment Variables:</label></div>
+                                    <div class="col">
+                                        <div>
+                                            <a href="#" v-on:click="add_database_envvar"><i class="fa fa-plus" aria-hidden="true"></i> Add Variable</a>
+                                            <envvar
+                                                    v-for="variable in database_envvars"
+                                                    v-on:remove="remove_database_envvar(variable.id)"
+                                                    v-bind:database_envvars="database_envvars"
+                                                    v-bind:variable="variable"
+                                                    v-bind:key="variable.id">
+                                            </envvar>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="section-heading">
+                                    <h2 id="queues-header">Queues</h2>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Software:</label></div>
+                                    <div class="col">
+                                        <div class="form-check">
+                                            <label class="form-check-label"><input type="radio" class="form-check-input" v-model="queue" value=""> None</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label"><input type="radio" class="form-check-input" v-model="queue" value="beanstalkd"> beanstalkd</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="section-heading">
+                                    <h2 id="logging-header">Logging</h2>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Include Mailhog?</label></div>
+                                    <div class="col"><input type="checkbox" v-model="mailhog"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script type="text/x-template" id="port-set-template">
+            <div class="border border-secondary portset">
+                <strong>Port set {{portset.id + 1}}</strong> <a href="#" v-on:click="remove_port(portset.id)"><span class="small">(<i class="fa fa-minus" aria-hidden="true"></i> Remove)</span></a>
+                <div class="form-row">
+                    <div class="col-1">Container Port</div>
+                    <div class="col"><input type="text" class="form-control" v-model="portset.srcPort" placeholder="80"></div>
+                </div>
+                <div class="form-row">
+                    <div class="col-1">Host Port</div>
+                    <div class="col"><input type="text" class="form-control" v-model="portset.hostPort" placeholder="8080"></div>
+                </div>
+            </div>
+        </script>
+
+        <script type="text/x-template" id="mountpoint-template">
+            <div class="border border-secondary portset">
+                <strong>Mountpoint {{mountpoint.id + 1}}</strong> <a href="#" v-on:click="remove(mountpoint.id)"><span class="small">(<i class="fa fa-minus" aria-hidden="true"></i> Remove)</span></a>
+                <div class="form-row">
+                    <div class="col-1">Local Path</div>
+                    <div class="col"><input type="text" class="form-control" v-model="mountpoint.localPath" placeholder="./"></div>
+                </div>
+                <div class="form-row">
+                    <div class="col-1">Container Path</div>
+                    <div class="col"><input type="text" class="form-control" v-model="mountpoint.containerPath" placeholder="/var/www"></div>
+                </div>
+            </div>
+        </script>
+
+        <script type="text/x-template" id="environment-variable-template">
+            <div class="border border-secondary portset">
+                <strong>Environmental Variable {{variable.id + 1}}</strong> <a href="#" v-on:click="remove(variable.id)"><span class="small">(<i class="fa fa-minus" aria-hidden="true"></i> Remove)</span></a>
+                <div class="form-row">
+                    <div class="col-1">Variable</div>
+                    <div class="col"><input type="text" class="form-control" v-model="variable.name" placeholder=""></div>
+                </div>
+                <div class="form-row">
+                    <div class="col-1">Value</div>
+                    <div class="col"><input type="text" class="form-control" v-model="variable.value" placeholder=""></div>
+                </div>
+            </div>
+        </script>
+
+        <script type="text/x-template" id="phpplugins-template">
+            <div>
+                <input-tag
+                    :on-change="tags_changed"
+                    :tags='tags'>
+                </input-tag>
+            </div>
+        </script>
+
+        <script src="https://unpkg.com/vue"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="js/vendor/FileSaver.min.js"></script>
+        <script src="js/app.js"></script>
+    </body>
+</html>
+

@@ -1,0 +1,7 @@
+version: '3'
+volumes: {  }
+services:
+    httpd: { build: docker/httpd, volumes: ['./:/var/www/'], ports: ['8080:80'] }
+    php-cli: { build: docker/php, working_dir: /var/www/, volumes: ['./:/var/www/'] }
+    composer: { image: composer/composer, volumes: ['./:/var/www/', '~/.ssh/:/root/.ssh'], tty: true, working_dir: /var/www/, command: 'install' }
+    node: { image: 'dragonmantank/nodejs-grunt-bower:6', volumes: ['./:/data'], tty: true }

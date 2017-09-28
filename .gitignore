@@ -1,0 +1,5 @@
+/.idea/
+/html/js/app.js
+/vendor/
+node_modules/
+/.npm/
