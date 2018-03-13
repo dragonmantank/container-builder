@@ -39,6 +39,18 @@ $requestConfig = [
     ]
 ];
 
+$cbConfig = [
+    'commands' => []
+];
+
+if ($request['cb_laravel_artisan']) {
+    $cbConfig['commands'][] = '"artisan") docker-compose run --rm -u $UID php-cli php artisan ${ARGS};;';
+}
+
+if ($request['cb_symfony_4_console']) {
+    $cbConfig['commands'][] = '"console") docker-compose run --rm -u $UID php-cli php bin/console ${ARGS};;';
+}
+
 if ($request['cli']) {
     $requestConfig['php-cli'] = [
         'service' => 'php',
@@ -76,7 +88,9 @@ $res = $filesystem->write('docker-compose.yml', \Symfony\Component\Yaml\Yaml::du
 foreach ($config['files'] as $zipPath => $content) {
    $filesystem->write($zipPath, $content);
 }
-$filesystem->write('cb', file_get_contents(__DIR__ . '/../data/templates/cb'));
+$cb = file_get_contents(__DIR__ . '/../data/templates/cb');
+$cb = str_replace('{{ commands }}', implode("\n", $cbConfig['commands']), $cb);
+$filesystem->write('cb', $cb);
 $filesystem->getAdapter()->getArchive()->close();
 
 if (file_exists($zipfilePath)) {

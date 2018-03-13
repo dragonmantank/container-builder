@@ -63,6 +63,8 @@ Vue.component('envvar', {
 var app = new Vue({
     el: "#content",
     data: {
+        cb_laravel_artisan: '',
+        cb_symfony_4_console: '',
         cli: 'checked',
         composer: 'checked',
         composer_official: true,
@@ -135,6 +137,8 @@ var app = new Vue({
                 url: '/app.php', 
                 responseType: 'arraybuffer',
                 data: {
+                    cb_laravel_artisan: this.cb_laravel_artisan,
+                    cb_symfony_4_console: this.cb_symfony_4_console,
                     composer: this.composer,
                     composer_official: this.composer_official,
                     cli: this.cli,

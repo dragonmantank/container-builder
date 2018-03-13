@@ -161,12 +161,20 @@
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="col-2"><label class="form-check-label">Include Composer?</label></div>
+                                    <div class="col-3"><label class="form-check-label">Include Composer?</label></div>
                                     <div class="col"><input type="checkbox" v-model="composer"></div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="col-2"><label class="form-check-label">Include CLI?</label></div>
+                                    <div class="col-3"><label class="form-check-label">Include CLI?</label></div>
                                     <div class="col"><input type="checkbox" v-model="cli"></div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3"><label class="form-check-label">Add `cb` alias for Symfony 4 console?</label></div>
+                                    <div class="col"><input type="checkbox" v-model="cb_symfony_4_console"></div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-3"><label class="form-check-label">Add `cb` alias for Laravel artisan?</label></div>
+                                    <div class="col"><input type="checkbox" v-model="cb_laravel_artisan"></div>
                                 </div>
                             </div>
                         </div>

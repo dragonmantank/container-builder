@@ -5,6 +5,7 @@ shift
 ARGS=$*
 
 case ${OPERATION} in
+    {{ commands }}
     "cli") docker-compose run --rm -u $UID php-cli php ${ARGS};;
     "composer") docker-compose run --rm -u $UID composer ${ARGS};;
     *) echo "Unknown operation: ${OPERATION}";;
