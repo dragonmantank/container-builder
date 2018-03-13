@@ -142,7 +142,7 @@
                                 <div class="form-row">
                                     <div class="col-2"><label class="form-check-label">PHP Version:</label></div>
                                     <div class="col">
-                                        <select v-model="php_version">
+                                        <select v-model="php_version" v-on:change="php_version_changed">
                                             <option disabled>EOL Versions</option>
                                             <option value="5.6">5.6</option>
                                             <option disabled>Supported Versions</option>

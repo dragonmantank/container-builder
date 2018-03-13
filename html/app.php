@@ -52,6 +52,9 @@ if ($request['cli']) {
 if ($request['composer']) {
     $requestConfig['composer'] = [
         'service' => 'composer',
+        'services' => ['composer' => [
+            'image' => ($request['composer_official'] == 'true') ? 'composer' : 'composer/composer',
+        ]],
     ];
 }
 

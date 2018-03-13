@@ -65,6 +65,7 @@ var app = new Vue({
     data: {
         cli: 'checked',
         composer: 'checked',
+        composer_official: true,
         database: 'mysql',
         database_envvars: [
             {id: 0, name: 'MYSQL_ROOT_PASSWORD', value: 'rootpassword'},
@@ -100,6 +101,13 @@ var app = new Vue({
         php_ext_changed: function(extensions, caller) {
             this.php_extensions = extensions[0];
         },
+        php_version_changed: function(event, caller) {
+            if (this.php_version > 7.0) {
+                this.composer_official = true;
+            } else {
+                this.composer_official = false;
+            }
+        },
         remove_database_envvar: function(id) {
             for(var index in this.database_envvars) {
                 if (id === this.database_envvars[index].id) {
@@ -128,6 +136,7 @@ var app = new Vue({
                 responseType: 'arraybuffer',
                 data: {
                     composer: this.composer,
+                    composer_official: this.composer_official,
                     cli: this.cli,
                     database: this.database,
                     database_envvars: this.database_envvars,

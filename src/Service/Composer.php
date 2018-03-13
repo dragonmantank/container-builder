@@ -4,7 +4,7 @@ namespace ContainerBuilder\Service;
 
 class Composer extends AbstractService
 {
-    protected $versions = ['composer/composer'];
+    protected $versions = ['composer', 'composer/composer'];
     protected $config = [
         'volumes' => [],
         'services' => [

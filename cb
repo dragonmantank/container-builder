@@ -7,9 +7,9 @@ ARGS=$*
 export UID
 
 case ${OPERATION} in
-    "build") docker-compose run --rm node node_modules/.bin/webpack ui/src/index.js html/js/app.js;;
-    "cli") docker-compose run --rm php-cli php ${ARGS};;
-    "composer") docker-compose run --rm composer ${ARGS};;
-    "npm") docker-compose run --rm node npm ${ARGS};;
+    "build") docker-compose run --rm -u $UID node node_modules/.bin/webpack ui/src/index.js html/js/app.js;;
+    "cli") docker-compose run --rm  -u $UID php-cli php ${ARGS};;
+    "composer") docker-compose run --rm  -u $UID composer ${ARGS};;
+    "npm") docker-compose run --rm  -u $UID node npm ${ARGS};;
     *) echo "Unknown operation: ${OPERATION}";;
 esac
