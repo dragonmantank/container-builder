@@ -10,6 +10,7 @@ class ServiceFactory
         'mysql' => 'ContainerBuilder\Service\Mysql',
         'php' => 'ContainerBuilder\Service\Php',
         'queue' => Beanstalkd::class,
+        'cache' => Redis::class,
         'mailhog' => Mailhog::class,
     ];
 

@@ -74,6 +74,10 @@ if ($request['queue']) {
     $requestConfig['queue'] = ['service' => 'queue'];
 }
 
+if ($request['cache']) {
+    $requestConfig['cache'] = ['service' => 'cache'];
+}
+
 if ($request['mailhog']) {
     $requestConfig['mailhog'] = ['service' => 'mailhog'];
 }

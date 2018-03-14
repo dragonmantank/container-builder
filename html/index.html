@@ -22,6 +22,8 @@
                 margin-top: -90px;
                 height: 90px;
                 visibility: hidden;
+                position: absolute;
+                z-index: -1;
             }
 
             .fade-enter-active, .fade-leave-active {
@@ -36,8 +38,6 @@
             .list-group-item { background-color: #f6f6f6 }
 
             .section-heading { background-color: #00b1b3; color: white; padding: 20px; margin-bottom: .5em }
-
-            .section-heading h2 { margin-bottom: 0; }
 
             .navbar-brand { font-family: 'Archivo Black', sans-serif; }
 
@@ -79,6 +79,7 @@
                             <li class="list-group-item"><a href="#php-header">PHP Configuration</a></li>
                             <li class="list-group-item"><a href="#database-header">Database</a></li>
                             <li class="list-group-item"><a href="#queues-header">Queues</a></li>
+                            <li class="list-group-item"><a href="#cache-header">Cache</a></li>
                             <li class="list-group-item"><a href="#logging-header">Logging</a></li>
                         </ul>
 
@@ -245,6 +246,26 @@
                         <div class="row">
                             <div class="col">
                                 <div class="section-heading">
+                                    <h2 id="cache-header">Caches</h2>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Software:</label></div>
+                                    <div class="col">
+                                        <div class="form-check">
+                                            <label class="form-check-label"><input type="radio" class="form-check-input" v-model="cache" v-on:change="update_cache_extensions" value=""> None</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <label class="form-check-label"><input type="radio" class="form-check-input" v-model="cache" v-on:change="update_cache_extensions" value="redis"> redis</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="section-heading">
                                     <h2 id="logging-header">Logging</h2>
                                 </div>
 
@@ -310,7 +331,7 @@
             </div>
         </script>
 
-        <script src="https://unpkg.com/vue"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.15/dist/vue.js"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script src="js/vendor/FileSaver.min.js"></script>
         <script src="js/app.js"></script>

@@ -14,7 +14,7 @@ var saveData = (function () {
     };
 }());
 
-Vue.component('phpplugins', {
+var phpplugins = Vue.component('phpplugins', {
     components: { InputTag },
     template: '#phpplugins-template',
     methods: {
@@ -22,12 +22,13 @@ Vue.component('phpplugins', {
             this.$emit('tags_changed', arguments);
         }
     },
-    data () {
+    data: function () {
         return {
-            tags: ['mbstring', 'zip', 'xdebug', 'gd', 'intl', 'xml', 'curl', 'json', 'pdo', 'pdo_mysql'],
+            tags: this.php_extensions,
             placeholder: 'Add Extension'
         }
-    }
+    },
+    props: ['php_extensions']
 });
 
 Vue.component('mountpoint', {
@@ -62,9 +63,13 @@ Vue.component('envvar', {
 
 var app = new Vue({
     el: "#content",
+    components: {
+        phpplugins: phpplugins
+    },
     data: {
         cb_laravel_artisan: '',
         cb_symfony_4_console: '',
+        cache: '',
         cli: 'checked',
         composer: 'checked',
         composer_official: true,
@@ -139,6 +144,7 @@ var app = new Vue({
                 data: {
                     cb_laravel_artisan: this.cb_laravel_artisan,
                     cb_symfony_4_console: this.cb_symfony_4_console,
+                    cache: this.cache,
                     composer: this.composer,
                     composer_official: this.composer_official,
                     cli: this.cli,
@@ -159,6 +165,16 @@ var app = new Vue({
                 console.log("error", error);
             });
             return false;
+        },
+        update_cache_extensions: function() {
+            if ('redis' === this.cache) {
+                this.php_extensions.push('redis');
+            } else {
+                var redisIndex = this.php_extensions.indexOf('redis');
+                if (redisIndex > -1) {
+                    this.php_extensions.splice(redisIndex, 1);
+                }
+            }
         }
     }
 });

@@ -28,7 +28,7 @@ class Php extends AbstractService
      * @var array
      */
     protected $extensions = [
-        'pecl' => ['xdebug'],
+        'pecl' => ['xdebug', 'redis'],
         'stock' => [
             'cmath', 'bz2', 'calendar', 'ctype', 'curl', 'dba', 'dom', 'enchant', 'exif', 'fileinfo', 'filter', 'ftp',
             'gd', 'gettext', 'gmp', 'hash', 'iconv', 'imap', 'interbase', 'intl', 'json', 'ldap', 'mbstring', 'mcrypt',
@@ -50,7 +50,11 @@ class Php extends AbstractService
                 $peclExtensions = array_intersect($this->overrides['build-options']['extensions'], $this->extensions['pecl']);
 
                 $stockString = 'docker-php-ext-install ' . implode(' ', $stockExtensions);
-                $peclString = 'pecl install ' . implode(' ', $peclExtensions);
+                $peclStrings = [];
+                foreach ($peclExtensions as $extension) {
+                    $peclStrings[] = 'pecl install -o -f ' . $extension . ' && docker-php-ext-enable ' . $extension;
+                }
+                $peclString = implode(' && ', $peclStrings);
 
                 $extensions = '';
                 if (count($stockExtensions)) { $extensions .= $stockString; }
