@@ -4,7 +4,7 @@ namespace ContainerBuilder\Service;
 
 class Httpd extends AbstractService
 {
-    protected $versions = ['php:5.6-apache', 'php:7.0-apache', 'php:7.1-apache'];
+    protected $versions = ['php:5.6-apache', 'php:7.0-apache', 'php:7.1-apache', 'php:7.2-apache'];
     protected $config = [
         'volumes' => [],
         'services' => [

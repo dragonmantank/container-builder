@@ -84,7 +84,7 @@ var app = new Vue({
         database_version: '5.7',
         mailhog: 'checked',
         php_extensions: ['mbstring', 'zip', 'xdebug', 'gd', 'intl', 'xml', 'curl', 'json', 'pdo', 'pdo_mysql'],
-        php_version: '7.1',
+        php_version: '7.2',
         queue: '',
         webserver: 'apache',
         webserver_ports: [{id: 0, srcPort: 80, hostPort: 8080}],
