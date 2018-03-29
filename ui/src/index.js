@@ -87,6 +87,7 @@ var app = new Vue({
         php_version: '7.2',
         queue: '',
         webserver: 'apache',
+        webserver_docroot: '/var/www/html',
         webserver_ports: [{id: 0, srcPort: 80, hostPort: 8080}],
         webserver_ports_id: 1,
         webserver_mountpoints: [{id: 0, localPath: './', containerPath: '/var/www/'}],
@@ -156,6 +157,7 @@ var app = new Vue({
                     php_version: this.php_version,
                     queue: this.queue,
                     webserver: this.webserver,
+                    webserver_docroot: this.webserver_docroot,
                     webserver_mountpoints: this.webserver_mountpoints,
                     webserver_ports: this.webserver_ports
                 }

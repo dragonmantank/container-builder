@@ -23,6 +23,7 @@ $requestConfig = [
         'build-options' => [
             'image' => 'php:' . $request['php_version'] . '-apache',
             'extensions' => $request['php_extensions'],
+            'docroot' => $request['webserver_docroot'],
         ],
         'services' => ['httpd' => [
             'ports' => $webserverPorts,

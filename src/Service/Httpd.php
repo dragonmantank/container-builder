@@ -61,7 +61,13 @@ class Httpd extends AbstractService
             }
         }
 
-        $files['docker/httpd/Dockerfile'] = str_replace('{{ extensions }}', $extensions, $files['docker/httpd/Dockerfile']);
+        $docroot = $this->overrides['build-options']['docroot'];
+        $docrootEscaped = str_replace('/', '\/', $docroot);
+        $files['docker/httpd/Dockerfile'] = str_replace(
+            ['{{ extensions }}', '{{ docroot }}', '{{ docroot_escaped }}'],
+            [$extensions, $docroot, $docrootEscaped],
+            $files['docker/httpd/Dockerfile']
+        );
         
         return $files;
     }

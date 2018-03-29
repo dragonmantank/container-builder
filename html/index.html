@@ -101,6 +101,13 @@
                                 <label class="form-check-label"><input type="radio" class="form-check-input" id="webserver_apache_radio" value="apache" v-model="webserver"> Apache 2.4 + mod_php</label><br/>
                             </div>
                         </div>
+
+                        <div class="form-row">
+                            <div class="col-2"><label class="form-check-label">Document Root:</label></div>
+                            <div class="col">
+                                <label class="form-check-label"><input type="text" class="form-check-input" id="webserver_docroot" value="apache" v-model="webserver_docroot"></label><br/>
+                            </div>
+                        </div>
             
                         <div class="form-row">
                             <div class="col-2"><label class="form-check-label">Ports:</label></div>
