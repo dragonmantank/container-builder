@@ -115,10 +115,13 @@ if ($request['nodejs_version']) {
         'service' => 'nodejs',
         'services' => ['nodejs' => [
             'image' => 'node:' . $request['nodejs_version'],
-            'ports' => $nodejsPorts,
             'volumes' => $nodejsVolumes,
         ]],
     ];
+
+    if (!empty($nodejsPorts)) {
+        $requestConfig['nodejs']['services']['nodejs']['ports'] = $nodejsPorts;
+    }
 }
 
 $builder = new \ContainerBuilder\ConfigBuilder();

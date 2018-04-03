@@ -61,6 +61,10 @@ abstract class AbstractService
             $yamlConfig['services'] = array_replace_recursive($yamlConfig['services'], $this->overrides['services']);
         }
 
+        if (isset($this->overrides['ports']) && count($this->overrides['ports']) == 0) {
+            unset($this->overrides['ports']);
+        }
+
         return $yamlConfig;
     }
 
