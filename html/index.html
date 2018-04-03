@@ -39,6 +39,7 @@
             .list-group-item { background-color: #f6f6f6 }
 
             .section-heading { background-color: #00b1b3; color: white; padding: 20px; margin-bottom: .5em }
+            .software-heading { background-color: #b32d00; color: white; padding: 10px; margin-bottom: .5em }
 
             .navbar-brand { font-family: 'Archivo Black', sans-serif; }
 
@@ -199,37 +200,72 @@
                                 <div class="form-row">
                                     <div class="col-2"><label class="form-check-label">Software:</label></div>
                                     <div class="col">
-                                        <label class="form-check-label"><input type="radio" class="form-check-input" v-model="database" value="mysql"> MySQL</label>
+                                        <label class="form-check-label"><input type="checkbox" class="form-check-input" v-model="database_mysql"> MySQL</label><br/>
+                                        <label class="form-check-label"><input type="checkbox" class="form-check-input" v-model="database_mongodb" v-on:change="update_database_extensions"> MongoDB</label>
                                     </div>
                                 </div>
 
-                                <div class="form-row">
-                                    <div class="col-2"><label class="form-check-label">Database Version:</label></div>
-                                    <div class="col">
-                                        <select v-model="database_version">
-                                            <option>5.5</option>
-                                            <option>5.6</option>
-                                            <option>5.7</option>
-                                            <option>8.0</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="form-row">
-                                    <div class="col-2"><label class="form-check-label">Environment Variables:</label></div>
-                                    <div class="col">
-                                        <div>
-                                            <a href="#" v-on:click="add_database_envvar"><i class="fa fa-plus" aria-hidden="true"></i> Add Variable</a>
-                                            <envvar
-                                                    v-for="variable in database_envvars"
-                                                    v-on:remove="remove_database_envvar(variable.id)"
-                                                    v-bind:database_envvars="database_envvars"
-                                                    v-bind:variable="variable"
-                                                    v-bind:key="variable.id">
-                                            </envvar>
+                                <transition name="fade">
+                                    <div class="form-row" v-if="database_mysql">
+                                        <div class="col-2">
+                                            <div class="software-heading">
+                                                <h4>MySQL Settings</h4>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-row">
+                                                <div class="col-2"><label class="form-check-label">Database Version: </label></div>
+                                                <div class="col">
+                                                    <select v-model="database_mysql_version">
+                                                        <option>5.5</option>
+                                                        <option>5.6</option>
+                                                        <option>5.7</option>
+                                                        <option>8.0</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="col-2"><label class="form-check-label">Environment Variables:</label></div>
+                                                <div class="col">
+                                                    <div>
+                                                        <a href="#" v-on:click="add_database_envvar"><i class="fa fa-plus" aria-hidden="true"></i> Add Variable</a>
+                                                        <envvar
+                                                                v-for="variable in database_envvars"
+                                                                v-on:remove="remove_database_envvar(variable.id)"
+                                                                v-bind:database_envvars="database_envvars"
+                                                                v-bind:variable="variable"
+                                                                v-bind:key="variable.id">
+                                                        </envvar>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </transition>
+
+                                <transition name="fade">
+                                    <div class="form-row" v-if="database_mongodb">
+                                        <div class="col-2">
+                                            <div class="software-heading">
+                                                <h4>MongoDB Settings</h4>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-row">
+                                                <div class="col-2"><label class="form-check-label">Database Version: </label></div>
+                                                <div class="col">
+                                                    <select v-model="database_mongodb_version">
+                                                        <option>3.7</option>
+                                                        <option>3.6</option>
+                                                        <option>3.4</option>
+                                                        <option>3.2</option>
+                                                        <option>3.0</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </transition>
                             </div>
                         </div>
 

@@ -13,6 +13,7 @@ class ServiceFactory
         'cache' => Redis::class,
         'mailhog' => Mailhog::class,
         'nodejs' => NodeJS::class,
+        'mongodb' => MongoDB::class,
     ];
 
     static public function create($service, $config = [])

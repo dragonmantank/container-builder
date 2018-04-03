@@ -28,7 +28,7 @@ class Php extends AbstractService
      * @var array
      */
     protected $extensions = [
-        'pecl' => ['xdebug', 'redis'],
+        'pecl' => ['xdebug', 'redis', 'mongodb'],
         'stock' => [
             'cmath', 'bz2', 'calendar', 'ctype', 'curl', 'dba', 'dom', 'enchant', 'exif', 'fileinfo', 'filter', 'ftp',
             'gd', 'gettext', 'gmp', 'hash', 'iconv', 'imap', 'interbase', 'intl', 'json', 'ldap', 'mbstring', 'mcrypt',

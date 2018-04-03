@@ -17,6 +17,10 @@ foreach ($request['database_envvars'] as $dbEnvvar) {
     $databaseEnvvars[$dbEnvvar['name']] =  $dbEnvvar['value'];
 }
 
+$cbConfig = [
+    'commands' => []
+];
+
 $requestConfig = [
     'httpd' => [
         'service' => 'httpd',
@@ -30,19 +34,30 @@ $requestConfig = [
             'volumes' => $webserverVolumes,
         ]
     ]],
-    'mysql' => [
-        'service' => 'mysql',
-        'services' => ['mysql' => [
-            'image' => 'mysql:' . $request['database_version'],
-            'environment' => $databaseEnvvars
-        ]],
-        'build-options' => ['image' => 'mysql:' . $request['database_version']],
-    ]
 ];
 
-$cbConfig = [
-    'commands' => []
-];
+if ($request['database_mysql']) {
+    $requestConfig['mysql'] = [
+        'service' => 'mysql',
+        'services' => ['mysql' => [
+            'image' => 'mysql:' . $request['database_mysql_version'],
+            'environment' => $databaseEnvvars
+        ]],
+        'build-options' => ['image' => 'mysql:' . $request['database_mysql_version']],
+    ];
+    $cbConfig['commands'][] = '"mysqlcli") docker-compose run --rm mysql mysql -h mysql ${ARGS};;';
+}
+
+if ($request['database_mongodb']) {
+    $requestConfig['mongodb'] = [
+        'service' => 'mongodb',
+        'services' => ['mongodb' => [
+            'image' => 'mongo:' . $request['database_mongodb_version'],
+        ]],
+        'build-options' => ['image' => 'mongo:' . $request['database_mongodb_version']],
+    ];
+    $cbConfig['commands'][] = '"mongocli") docker-compose run --rm mongodb mongo mongodb://mongodb ${ARGS};;';
+}
 
 if ($request['cb_laravel_artisan']) {
     $cbConfig['commands'][] = '"artisan") docker-compose run --rm -u $UID php-cli php artisan ${ARGS};;';

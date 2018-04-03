@@ -73,7 +73,10 @@ var app = new Vue({
         cli: 'checked',
         composer: 'checked',
         composer_official: true,
-        database: 'mysql',
+        database_mongodb: false,
+        database_mongodb_version: '3.7',
+        database_mysql: true,
+        database_mysql_version: '5.7',
         database_envvars: [
             {id: 0, name: 'MYSQL_ROOT_PASSWORD', value: 'rootpassword'},
             {id: 1, name: 'MYSQL_USER', value: 'dbuser'},
@@ -81,7 +84,6 @@ var app = new Vue({
             {id: 3, name: 'MYSQL_DATABASE', value: 'appdb'}
         ],
         database_envvar_id: 4,
-        database_version: '5.7',
         mailhog: 'checked',
         nodejs_mountpoints: [{id: 0, localPath: './', containerPath: '/var/www/'}],
         nodejs_mountpoints_id: 1,
@@ -177,6 +179,10 @@ var app = new Vue({
                     composer_official: this.composer_official,
                     cli: this.cli,
                     database: this.database,
+                    database_mongodb: this.database_mongodb,
+                    database_mongodb_version: this.database_mongodb_version,
+                    database_mysql: this.database_mysql,
+                    database_mysql_version: this.database_mysql_version,
                     database_envvars: this.database_envvars,
                     database_version: this.database_version,
                     mailhog: this.mailhog,
@@ -205,6 +211,16 @@ var app = new Vue({
                 var redisIndex = this.php_extensions.indexOf('redis');
                 if (redisIndex > -1) {
                     this.php_extensions.splice(redisIndex, 1);
+                }
+            }
+        },
+        update_database_extensions: function() {
+            if (this.database_mongodb) {
+                this.php_extensions.push('mongodb');
+            } else {
+                var mongoIndex = this.php_extensions.indexOf('mongodb');
+                if (mongoIndex > -1) {
+                    this.php_extensions.splice(mongoIndex, 1);
                 }
             }
         }
