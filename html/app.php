@@ -83,6 +83,29 @@ if ($request['mailhog']) {
     $requestConfig['mailhog'] = ['service' => 'mailhog'];
 }
 
+if ($request['nodejs_version']) {
+    $nodejsPorts = $nodejsVolumes = [];
+
+    foreach ($request['nodejs_ports'] as $ports) {
+        $nodejsPorts[] = $ports['hostPort'] . ':' . $ports['srcPort'];
+    }
+
+    foreach ($request['nodejs_mountpoints'] as $volume) {
+        $nodejsVolumes[] = $volume['localPath'] . ':' . $volume['containerPath'];
+    }
+
+    $cbConfig['commands'][] = '"node") docker-compose run --rm -u $UID nodejs ${ARGS};;';
+
+    $requestConfig['nodejs'] = [
+        'service' => 'nodejs',
+        'services' => ['nodejs' => [
+            'image' => 'node:' . $request['nodejs_version'],
+            'ports' => $nodejsPorts,
+            'volumes' => $nodejsVolumes,
+        ]],
+    ];
+}
+
 $builder = new \ContainerBuilder\ConfigBuilder();
 $config = $builder->generateConfig($requestConfig);
 

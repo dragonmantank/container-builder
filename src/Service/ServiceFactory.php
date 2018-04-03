@@ -12,6 +12,7 @@ class ServiceFactory
         'queue' => Beanstalkd::class,
         'cache' => Redis::class,
         'mailhog' => Mailhog::class,
+        'nodejs' => NodeJS::class,
     ];
 
     static public function create($service, $config = [])

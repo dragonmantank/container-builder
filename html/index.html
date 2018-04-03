@@ -82,6 +82,7 @@
                             <li class="list-group-item"><a href="#queues-header">Queues</a></li>
                             <li class="list-group-item"><a href="#cache-header">Cache</a></li>
                             <li class="list-group-item"><a href="#logging-header">Logging</a></li>
+                            <li class="list-group-item"><a href="#nodejs-header">NodeJS</a></li>
                         </ul>
 
                         <div class="text-center">
@@ -281,6 +282,58 @@
                                 <div class="form-row">
                                     <div class="col-2"><label class="form-check-label">Include Mailhog?</label></div>
                                     <div class="col"><input type="checkbox" v-model="mailhog"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="section-heading">
+                                    <h2 id="nodejs-header">NodeJS</h2>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">NodeJS Version:</label></div>
+                                    <div class="col">
+                                        <select v-model="nodejs_version">
+                                            <option value="">Do Not Install</option>
+                                            <option>9.10</option>
+                                            <option>8.11</option>
+                                            <option>6.14</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Ports:</label></div>
+                                    <div class="col">
+                                        <div>
+                                            <a href="#" v-on:click="add_nodejs_port"><i class="fa fa-plus" aria-hidden="true"></i> Add Port</a>
+                                            <portset
+                                                    v-for="portset in nodejs_ports"
+                                                    v-on:removeport="remove_nodejs_port(portset.id)"
+                                                    v-bind:nodejs_ports="nodejs_ports"
+                                                    v-bind:portset="portset"
+                                                    v-bind:key="portset.id">
+                                            </portset>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Mount Points:</label></div>
+                                    <div class="col">
+                                        <a href="#" v-on:click="add_nodejs_mountpoint"><i class="fa fa-plus" aria-hidden="true"></i> Add Volume</a>
+                                        <div>
+                                            <mountpoint
+                                                    v-for="mountpoint in nodejs_mountpoints"
+                                                    v-on:remove="remove_nodejs_mountpoint(mountpoint.id)"
+                                                    v-bind:mountpoint="mountpoint"
+                                                    v-bind:webserver_mountpoints="nodejs_mountpoints"
+                                                    v-bind:key="mountpoint.id">
+                                            </mountpoint>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

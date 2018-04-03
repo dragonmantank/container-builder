@@ -83,6 +83,11 @@ var app = new Vue({
         database_envvar_id: 4,
         database_version: '5.7',
         mailhog: 'checked',
+        nodejs_mountpoints: [{id: 0, localPath: './', containerPath: '/var/www/'}],
+        nodejs_mountpoints_id: 1,
+        nodejs_ports: [],
+        nodejs_ports_id: 0,
+        nodejs_version: '',
         php_extensions: ['mbstring', 'zip', 'xdebug', 'gd', 'intl', 'xml', 'curl', 'json', 'pdo', 'pdo_mysql'],
         php_version: '7.2',
         queue: '',
@@ -97,6 +102,14 @@ var app = new Vue({
         add_database_envvar: function() {
             this.database_envvars.push({id: this.database_envvar_id, name: '', value: ''});
             this.database_envvar_id += 1;
+        },
+        add_nodejs_port: function() {
+            this.nodejs_ports.push({id: this.nodejs_ports_id, srcPort: '', hostPort: ''});
+            this.nodejs_ports_id += 1;
+        },
+        add_nodejs_mountpoint: function() {
+            this.nodejs_mountpoints.push({id: this.nodejs_mountpoints_id, localPath: "", containerPath: ''});
+            this.nodejs_mountpoints_id += 1;
         },
         add_webserver_port: function() {
             this.webserver_ports.push({id: this.webserver_ports_id, srcPort: '', hostPort: ''});
@@ -120,6 +133,20 @@ var app = new Vue({
             for(var index in this.database_envvars) {
                 if (id === this.database_envvars[index].id) {
                     this.database_envvars.splice(index, 1);
+                }
+            }
+        },
+        remove_nodejs_mountpoint: function(id) {
+            for(var index in this.nodejs_mountpoints) {
+                if (id === this.nodejs_mountpoints[index].id) {
+                    this.nodejs_mountpoints.splice(index, 1);
+                }
+            }
+        },
+        remove_nodejs_port: function(id) {
+            for(var portset in this.nodejs_ports) {
+                if (id === this.nodejs_ports[portset].id) {
+                    this.nodejs_ports.splice(portset, 1);
                 }
             }
         },
@@ -153,6 +180,9 @@ var app = new Vue({
                     database_envvars: this.database_envvars,
                     database_version: this.database_version,
                     mailhog: this.mailhog,
+                    nodejs_mountpoints: this.nodejs_mountpoints,
+                    nodejs_ports: this.nodejs_ports,
+                    nodejs_version: this.nodejs_version,
                     php_extensions: this.php_extensions,
                     php_version: this.php_version,
                     queue: this.queue,
