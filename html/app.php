@@ -3,38 +3,42 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $request = json_decode(file_get_contents('php://input'), true);
 
-$webserverPorts = $webserverVolumes = $databaseEnvvars = [];
-
-foreach ($request['webserver_ports'] as $ports) {
-    $webserverPorts[] = $ports['hostPort'] . ':' . $ports['srcPort'];
-}
-
-foreach ($request['webserver_mountpoints'] as $volume) {
-    $webserverVolumes[] = $volume['localPath'] . ':' . $volume['containerPath'];
-}
-
-foreach ($request['database_envvars'] as $dbEnvvar) {
-    $databaseEnvvars[$dbEnvvar['name']] =  $dbEnvvar['value'];
-}
-
+$requestConfig = $webserverPorts = $webserverVolumes = $databaseEnvvars = [];
 $cbConfig = [
     'commands' => []
 ];
 
-$requestConfig = [
-    'httpd' => [
+if ($request['php_webserver']) {
+    $requestConfig['httpd'] = [
         'service' => 'httpd',
         'build-options' => [
             'image' => 'php:' . $request['php_version'] . '-apache',
             'extensions' => $request['php_extensions'],
             'docroot' => $request['webserver_docroot'],
         ],
-        'services' => ['httpd' => [
-            'ports' => $webserverPorts,
-            'volumes' => $webserverVolumes,
-        ]
-    ]],
-];
+        'services' => ['httpd' => []
+    ]];
+
+    foreach ($request['webserver_ports'] as $ports) {
+        $webserverPorts[] = $ports['hostPort'] . ':' . $ports['srcPort'];
+    }
+
+    foreach ($request['webserver_mountpoints'] as $volume) {
+        $webserverVolumes[] = $volume['localPath'] . ':' . $volume['containerPath'];
+    }
+
+    if (!empty($webserverPorts)) {
+        $requestConfig['httpd']['services']['httpd']['ports'] = $webserverPorts;
+    }
+
+    if (!empty($webserverVolumes)) {
+        $requestConfig['httpd']['services']['httpd']['volumes'] = $webserverVolumes;
+    }
+}
+
+foreach ($request['database_envvars'] as $dbEnvvar) {
+    $databaseEnvvars[$dbEnvvar['name']] =  $dbEnvvar['value'];
+}
 
 if ($request['database_mysql']) {
     $requestConfig['mysql'] = [

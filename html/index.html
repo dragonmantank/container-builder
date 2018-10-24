@@ -77,8 +77,7 @@
                 <div class="col-2 h-100">
                     <div  id="side-navbar" class="col-1" style="max-width: 15%">
                         <ul class="list-group">
-                            <li class="list-group-item"><a href="#webserver-header">Web Server</a></li>
-                            <li class="list-group-item"><a href="#php-header">PHP Configuration</a></li>
+                            <li class="list-group-item"><a href="#php-header">PHP</a></li>
                             <li class="list-group-item"><a href="#database-header">Database</a></li>
                             <li class="list-group-item"><a href="#queues-header">Queues</a></li>
                             <li class="list-group-item"><a href="#cache-header">Cache</a></li>
@@ -95,60 +94,10 @@
 
                 <div class="col">
                     <div>
-                        <div class="section-heading">
-                            <h2 id="webserver-header">Web Server</h2>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="col-2"><label class="form-check-label">Software:</label></div>
-                            <div class="col">
-                                <label class="form-check-label"><input type="radio" class="form-check-input" id="webserver_apache_radio" value="apache" v-model="webserver"> Apache 2.4 + mod_php</label><br/>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="col-2"><label class="form-check-label">Document Root:</label></div>
-                            <div class="col">
-                                <label class="form-check-label"><input type="text" class="form-check-input" id="webserver_docroot" value="apache" v-model="webserver_docroot"></label><br/>
-                            </div>
-                        </div>
-            
-                        <div class="form-row">
-                            <div class="col-2"><label class="form-check-label">Ports:</label></div>
-                            <div class="col">
-                                <div>
-                                    <a href="#" v-on:click="add_webserver_port"><i class="fa fa-plus" aria-hidden="true"></i> Add Port</a>
-                                    <portset
-                                            v-for="portset in webserver_ports"
-                                            v-on:removeport="remove_webserver_port(portset.id)"
-                                            v-bind:webserver_ports="webserver_ports"
-                                            v-bind:portset="portset"
-                                            v-bind:key="portset.id">
-                                    </portset>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="col-2"><label class="form-check-label">Mount Points:</label></div>
-                            <div class="col">
-                                <a href="#" v-on:click="add_webserver_mountpoint"><i class="fa fa-plus" aria-hidden="true"></i> Add Volume</a>
-                                <div>
-                                    <mountpoint 
-                                        v-for="mountpoint in webserver_mountpoints"
-                                        v-on:remove="remove_webserver_mountpoint(mountpoint.id)"
-                                        v-bind:mountpoint="mountpoint"
-                                        v-bind:webserver_mountpoints="webserver_mountpoints"
-                                        v-bind:key="mountpoint.id">
-                                    </mountpoint>
-                                </div>
-                            </div>
-                        </div>
-            
                         <div class="row">
                             <div class="col">
                                 <div class="section-heading">
-                                    <h2 id="php-header">PHP Configuration</h2>
+                                    <h2 id="php-header">PHP</h2>
                                 </div>
 
                                 <div class="form-row">
@@ -181,6 +130,65 @@
                                     <div class="col-3"><label class="form-check-label">Include CLI?</label></div>
                                     <div class="col"><input type="checkbox" v-model="cli"></div>
                                 </div>
+                                <div class="form-row">
+                                    <div class="col-3"><label class="form-check-label">Include Web Server?</label></div>
+                                    <div class="col"><input type="checkbox" v-model="php_webserver"></div>
+                                </div>
+
+                                <transition name="fade">
+                                    <div class="form-row" v-if="php_webserver">
+                                        <div class="col-3">
+                                            <div class="software-heading">
+                                                <h4>Web Server Settings</h4>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-row">
+                                                <div class="col-2"><label class="form-check-label">Software:</label></div>
+                                                <div class="col">
+                                                    <label class="form-check-label"><input type="radio" class="form-check-input" id="webserver_apache_radio" value="apache" v-model="webserver"> Apache 2.4 + mod_php</label><br/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="col-2"><label class="form-check-label">Document Root:</label></div>
+                                                <div class="col">
+                                                    <label class="form-check-label"><input type="text" class="form-check-input" id="webserver_docroot" value="apache" v-model="webserver_docroot"></label><br/>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="col-2"><label class="form-check-label">Ports:</label></div>
+                                                <div class="col">
+                                                    <div>
+                                                        <a href="#" v-on:click="add_webserver_port"><i class="fa fa-plus" aria-hidden="true"></i> Add Port</a>
+                                                        <portset
+                                                                v-for="portset in webserver_ports"
+                                                                v-on:removeport="remove_webserver_port(portset.id)"
+                                                                v-bind:webserver_ports="webserver_ports"
+                                                                v-bind:portset="portset"
+                                                                v-bind:key="portset.id">
+                                                        </portset>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <div class="col-2"><label class="form-check-label">Mount Points:</label></div>
+                                                <div class="col">
+                                                    <a href="#" v-on:click="add_webserver_mountpoint"><i class="fa fa-plus" aria-hidden="true"></i> Add Volume</a>
+                                                    <div>
+                                                        <mountpoint
+                                                            v-for="mountpoint in webserver_mountpoints"
+                                                            v-on:remove="remove_webserver_mountpoint(mountpoint.id)"
+                                                            v-bind:mountpoint="mountpoint"
+                                                            v-bind:webserver_mountpoints="webserver_mountpoints"
+                                                            v-bind:key="mountpoint.id">
+                                                        </mountpoint>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </transition>
+
                                 <div class="form-row">
                                     <div class="col-3"><label class="form-check-label">Add `cb` alias for Symfony 4 console?</label></div>
                                     <div class="col"><input type="checkbox" v-model="cb_symfony_4_console"></div>
