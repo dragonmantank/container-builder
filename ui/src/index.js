@@ -90,6 +90,11 @@ var app = new Vue({
         nodejs_ports: [],
         nodejs_ports_id: 0,
         nodejs_version: '',
+        python_mountpoints: [{id: 0, localPath: './', containerPath: '/app/'}],
+        python_mountpoints_id: 1,
+        python_ports: [],
+        python_ports_id: 0,
+        python_version: '',
         php_extensions: ['mbstring', 'zip', 'xdebug', 'gd', 'intl', 'xml', 'curl', 'json', 'pdo', 'pdo_mysql'],
         php_version: '7.2',
         queue: '',
@@ -112,6 +117,14 @@ var app = new Vue({
         add_nodejs_mountpoint: function() {
             this.nodejs_mountpoints.push({id: this.nodejs_mountpoints_id, localPath: "", containerPath: ''});
             this.nodejs_mountpoints_id += 1;
+        },
+        add_python_port: function() {
+            this.python_ports.push({id: this.python_ports_id, srcPort: '', hostPort: ''});
+            this.python_ports_id += 1;
+        },
+        add_python_mountpoint: function() {
+            this.python_mountpoints.push({id: this.python_mountpoints_id, localPath: "", containerPath: ''});
+            this.python_mountpoints_id += 1;
         },
         add_webserver_port: function() {
             this.webserver_ports.push({id: this.webserver_ports_id, srcPort: '', hostPort: ''});
@@ -149,6 +162,20 @@ var app = new Vue({
             for(var portset in this.nodejs_ports) {
                 if (id === this.nodejs_ports[portset].id) {
                     this.nodejs_ports.splice(portset, 1);
+                }
+            }
+        },
+        remove_python_mountpoint: function(id) {
+            for(var index in this.python_mountpoints) {
+                if (id === this.python_mountpoints[index].id) {
+                    this.python_mountpoints.splice(index, 1);
+                }
+            }
+        },
+        remove_python_port: function(id) {
+            for(var portset in this.python_ports) {
+                if (id === this.python_ports[portset].id) {
+                    this.python_ports.splice(portset, 1);
                 }
             }
         },
@@ -191,6 +218,9 @@ var app = new Vue({
                     nodejs_version: this.nodejs_version,
                     php_extensions: this.php_extensions,
                     php_version: this.php_version,
+                    python_mountpoints: this.python_mountpoints,
+                    python_ports: this.python_ports,
+                    python_version: this.python_version,
                     queue: this.queue,
                     webserver: this.webserver,
                     webserver_docroot: this.webserver_docroot,

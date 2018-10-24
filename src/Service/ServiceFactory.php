@@ -14,6 +14,7 @@ class ServiceFactory
         'mailhog' => Mailhog::class,
         'nodejs' => NodeJS::class,
         'mongodb' => MongoDB::class,
+        'python' => Python::class,
     ];
 
     static public function create($service, $config = [])

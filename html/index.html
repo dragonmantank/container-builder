@@ -84,6 +84,7 @@
                             <li class="list-group-item"><a href="#cache-header">Cache</a></li>
                             <li class="list-group-item"><a href="#logging-header">Logging</a></li>
                             <li class="list-group-item"><a href="#nodejs-header">NodeJS</a></li>
+                            <li class="list-group-item"><a href="#python-header">Python</a></li>
                         </ul>
 
                         <div class="text-center">
@@ -366,6 +367,59 @@
                                                     v-on:remove="remove_nodejs_mountpoint(mountpoint.id)"
                                                     v-bind:mountpoint="mountpoint"
                                                     v-bind:webserver_mountpoints="nodejs_mountpoints"
+                                                    v-bind:key="mountpoint.id">
+                                            </mountpoint>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="section-heading">
+                                    <h2 id="python-header">Python</h2>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Python Version:</label></div>
+                                    <div class="col">
+                                        <select v-model="python_version">
+                                            <option value="">Do Not Install</option>
+                                            <option>3.6</option>
+                                            <option>3.5</option>
+                                            <option>3.4</option>
+                                            <option>2.7</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Ports:</label></div>
+                                    <div class="col">
+                                        <div>
+                                            <a href="#" v-on:click="add_python_port"><i class="fa fa-plus" aria-hidden="true"></i> Add Port</a>
+                                            <portset
+                                                    v-for="portset in python_ports"
+                                                    v-on:removeport="remove_python_port(portset.id)"
+                                                    v-bind:python_ports="python_ports"
+                                                    v-bind:portset="portset"
+                                                    v-bind:key="portset.id">
+                                            </portset>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="col-2"><label class="form-check-label">Mount Points:</label></div>
+                                    <div class="col">
+                                        <a href="#" v-on:click="add_python_mountpoint"><i class="fa fa-plus" aria-hidden="true"></i> Add Volume</a>
+                                        <div>
+                                            <mountpoint
+                                                    v-for="mountpoint in python_mountpoints"
+                                                    v-on:remove="remove_python_mountpoint(mountpoint.id)"
+                                                    v-bind:mountpoint="mountpoint"
+                                                    v-bind:webserver_mountpoints="python_mountpoints"
                                                     v-bind:key="mountpoint.id">
                                             </mountpoint>
                                         </div>

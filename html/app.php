@@ -124,6 +124,32 @@ if ($request['nodejs_version']) {
     }
 }
 
+if ($request['python_version']) {
+    $pythonPorts = $pythonVolumes = [];
+
+    foreach ($request['python_ports'] as $ports) {
+        $pythonPorts[] = $ports['hostPort'] . ':' . $ports['srcPort'];
+    }
+
+    foreach ($request['python_mountpoints'] as $volume) {
+        $pythonVolumes[] = $volume['localPath'] . ':' . $volume['containerPath'];
+    }
+
+    $cbConfig['commands'][] = '"python") docker-compose run --rm -u $UID python python ${ARGS};;';
+
+    $requestConfig['python'] = [
+        'service' => 'python',
+        'services' => ['python' => [
+            'image' => 'python:' . $request['python_version'],
+            'volumes' => $pythonVolumes,
+        ]],
+    ];
+
+    if (!empty($pythonPorts)) {
+        $requestConfig['python']['services']['python']['ports'] = $pythonPorts;
+    }
+}
+
 $builder = new \ContainerBuilder\ConfigBuilder();
 $config = $builder->generateConfig($requestConfig);
 
