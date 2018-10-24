@@ -75,7 +75,7 @@ var app = new Vue({
         composer_official: true,
         database_mongodb: false,
         database_mongodb_version: '3.7',
-        database_mysql: true,
+        database_mysql: false,
         database_mysql_version: '5.7',
         database_envvars: [
             {id: 0, name: 'MYSQL_ROOT_PASSWORD', value: 'rootpassword'},
@@ -84,7 +84,7 @@ var app = new Vue({
             {id: 3, name: 'MYSQL_DATABASE', value: 'appdb'}
         ],
         database_envvar_id: 4,
-        mailhog: 'checked',
+        mailhog: '',
         nodejs_mountpoints: [{id: 0, localPath: './', containerPath: '/var/www/'}],
         nodejs_mountpoints_id: 1,
         nodejs_ports: [],
@@ -96,7 +96,7 @@ var app = new Vue({
         python_ports_id: 0,
         python_version: '',
         php_extensions: ['mbstring', 'zip', 'xdebug', 'gd', 'intl', 'xml', 'curl', 'json', 'pdo', 'pdo_mysql'],
-        php_version: '7.2',
+        php_version: '',
         php_webserver: '',
         queue: '',
         webserver: 'apache',

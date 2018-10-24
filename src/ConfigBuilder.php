@@ -9,7 +9,7 @@ class ConfigBuilder
 {
     public function generateConfig($config = [])
     {
-        $dockerCompose = ['version' => '3', 'volumes' => [], 'services' => []];
+        $dockerCompose = ['version' => '3.4', 'volumes' => [], 'services' => []];
 
         $files = [];
         /**

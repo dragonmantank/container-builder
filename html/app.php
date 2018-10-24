@@ -8,31 +8,62 @@ $cbConfig = [
     'commands' => []
 ];
 
-if ($request['php_webserver']) {
-    $requestConfig['httpd'] = [
-        'service' => 'httpd',
-        'build-options' => [
-            'image' => 'php:' . $request['php_version'] . '-apache',
-            'extensions' => $request['php_extensions'],
-            'docroot' => $request['webserver_docroot'],
-        ],
-        'services' => ['httpd' => []
-    ]];
+if (!empty($request['php_version'])) {
+    if ($request['php_webserver']) {
+        $requestConfig['httpd'] = [
+            'service' => 'httpd',
+            'build-options' => [
+                'image' => 'php:' . $request['php_version'] . '-apache',
+                'extensions' => $request['php_extensions'],
+                'docroot' => $request['webserver_docroot'],
+            ],
+            'services' => ['httpd' => []
+        ]];
 
-    foreach ($request['webserver_ports'] as $ports) {
-        $webserverPorts[] = $ports['hostPort'] . ':' . $ports['srcPort'];
+        foreach ($request['webserver_ports'] as $ports) {
+            $webserverPorts[] = $ports['hostPort'] . ':' . $ports['srcPort'];
+        }
+
+        foreach ($request['webserver_mountpoints'] as $volume) {
+            $webserverVolumes[] = $volume['localPath'] . ':' . $volume['containerPath'];
+        }
+
+        if (!empty($webserverPorts)) {
+            $requestConfig['httpd']['services']['httpd']['ports'] = $webserverPorts;
+        }
+
+        if (!empty($webserverVolumes)) {
+            $requestConfig['httpd']['services']['httpd']['volumes'] = $webserverVolumes;
+        }
     }
 
-    foreach ($request['webserver_mountpoints'] as $volume) {
-        $webserverVolumes[] = $volume['localPath'] . ':' . $volume['containerPath'];
+    if ($request['cli']) {
+        $requestConfig['php-cli'] = [
+            'service' => 'php',
+            'build-options' => [
+                'image' => 'php:' . $request['php_version'] . '-cli',
+                'extensions' => $request['php_extensions'],
+            ]
+        ];
+        $cbConfig['commands'][] = '"cli") docker-compose run --rm -u $UID php-cli php ${ARGS};;';
     }
 
-    if (!empty($webserverPorts)) {
-        $requestConfig['httpd']['services']['httpd']['ports'] = $webserverPorts;
+    if ($request['cb_laravel_artisan']) {
+        $cbConfig['commands'][] = '"artisan") docker-compose run --rm -u $UID php-cli php artisan ${ARGS};;';
     }
 
-    if (!empty($webserverVolumes)) {
-        $requestConfig['httpd']['services']['httpd']['volumes'] = $webserverVolumes;
+    if ($request['cb_symfony_4_console']) {
+        $cbConfig['commands'][] = '"console") docker-compose run --rm -u $UID php-cli php bin/console ${ARGS};;';
+    }
+
+    if ($request['composer']) {
+        $requestConfig['composer'] = [
+            'service' => 'composer',
+            'services' => ['composer' => [
+                'image' => ($request['composer_official'] == 'true') ? 'composer' : 'composer/composer',
+            ]],
+        ];
+        $cbConfig['commands'][] = '"composer") docker-compose run --rm -u $UID composer ${ARGS};;';
     }
 }
 
@@ -61,33 +92,6 @@ if ($request['database_mongodb']) {
         'build-options' => ['image' => 'mongo:' . $request['database_mongodb_version']],
     ];
     $cbConfig['commands'][] = '"mongocli") docker-compose run --rm mongodb mongo mongodb://mongodb ${ARGS};;';
-}
-
-if ($request['cb_laravel_artisan']) {
-    $cbConfig['commands'][] = '"artisan") docker-compose run --rm -u $UID php-cli php artisan ${ARGS};;';
-}
-
-if ($request['cb_symfony_4_console']) {
-    $cbConfig['commands'][] = '"console") docker-compose run --rm -u $UID php-cli php bin/console ${ARGS};;';
-}
-
-if ($request['cli']) {
-    $requestConfig['php-cli'] = [
-        'service' => 'php',
-        'build-options' => [
-            'image' => 'php:' . $request['php_version'] . '-cli',
-            'extensions' => $request['php_extensions'],
-        ]
-    ];
-}
-
-if ($request['composer']) {
-    $requestConfig['composer'] = [
-        'service' => 'composer',
-        'services' => ['composer' => [
-            'image' => ($request['composer_official'] == 'true') ? 'composer' : 'composer/composer',
-        ]],
-    ];
 }
 
 if ($request['queue']) {
