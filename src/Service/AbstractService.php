@@ -33,39 +33,36 @@ abstract class AbstractService
      */
     protected $serviceName;
 
-    public function __construct($overrides)
-    {
-        $this->overrides = $overrides;
-
-        if (isset($this->overrides['service-name'])) {
-            $this->serviceName = $this->overrides['service-name'];
-        }
-    }
-
     /**
      * Generates the Docker Compose config YAML block for a service
      *
      * @return array
      */
-    public function getConfig()
+    public function getConfig(array $request)
     {
-        $yamlConfig = [
-            'volumes' => $this->config['volumes'],
-            'services' => [$this->serviceName => $this->config['services'][$this->serviceName]]
-        ];
+        $this->processRequest($request);
 
-        if (isset($this->overrides['volumes']) && count($this->overrides['volumes'])) {
-            $yamlConfig['volumes'] = array_replace_recursive($yamlConfig['volumes'], $this->overrides['volumes']);
+        if (isset($this->overrides['docker'][$this->serviceName])) {
+            $yamlConfig = [
+                'volumes' => $this->config['volumes'],
+                'services' => [$this->serviceName => $this->config['services'][$this->serviceName]]
+            ];
+    
+            if (isset($this->overrides['docker'][$this->serviceName]['volumes']) && count($this->overrides['docker'][$this->serviceName]['volumes'])) {
+                $yamlConfig['volumes'] = array_replace_recursive($yamlConfig['volumes'], $this->overrides['docker'][$this->serviceName]['volumes']);
+            }
+            if (isset($this->overrides['docker'][$this->serviceName]['services']) && count($this->overrides['docker'][$this->serviceName]['services'])) {
+                $yamlConfig['services'] = array_replace_recursive($yamlConfig['services'], $this->overrides['docker'][$this->serviceName]['services']);
+            }
+    
+            if (isset($this->overrides['docker'][$this->serviceName]['ports']) && count($this->overrides['docker'][$this->serviceName]['ports']) == 0) {
+                unset($this->overrides['docker'][$this->serviceName]['ports']);
+            }
+    
+            return ['docker-compose' => $yamlConfig, 'commands' => $this->overrides['commands']];
         }
-        if (isset($this->overrides['services']) && count($this->overrides['services'])) {
-            $yamlConfig['services'] = array_replace_recursive($yamlConfig['services'], $this->overrides['services']);
-        }
-
-        if (isset($this->overrides['ports']) && count($this->overrides['ports']) == 0) {
-            unset($this->overrides['ports']);
-        }
-
-        return $yamlConfig;
+        
+        return [];
     }
 
     /**
@@ -79,9 +76,9 @@ abstract class AbstractService
         foreach ($this->files as $fsPath => $zipPath) {
             $contents = file_get_contents($fsPath);
 
-            if (isset($this->overrides['build-options'])) {
-                if (isset($this->overrides['build-options']['image'])) {
-                    $contents = str_replace('{{ image }}', $this->overrides['build-options']['image'], $contents);
+            if (isset($this->overrides['docker']['build-options'])) {
+                if (isset($this->overrides['docker']['build-options']['image'])) {
+                    $contents = str_replace('{{ image }}', $this->overrides['docker']['build-options']['image'], $contents);
                 }
             }
 
@@ -90,4 +87,6 @@ abstract class AbstractService
 
         return $files;
     }
+
+    abstract protected function processRequest(array $request);
 }

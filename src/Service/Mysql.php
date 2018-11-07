@@ -20,4 +20,27 @@ class Mysql extends AbstractService
         ]
     ];
     protected $serviceName = 'mysql';
+
+    protected function processRequest(array $request)
+    {
+        $requestConfig = $cbConfig = $databaseEnvvars = [];
+
+        if ($request['database_mysql']) {
+            foreach ($request['database_envvars'] as $dbEnvvar) {
+                $databaseEnvvars[$dbEnvvar['name']] =  $dbEnvvar['value'];
+            }
+
+            $requestConfig['mysql'] = [
+                'service' => 'mysql',
+                'services' => ['mysql' => [
+                    'image' => 'mysql:' . $request['database_mysql_version'],
+                    'environment' => $databaseEnvvars
+                ]],
+                'build-options' => ['image' => 'mysql:' . $request['database_mysql_version']],
+            ];
+            $cbConfig['commands'][] = '"mysqlcli") docker-compose run --rm mysql mysql -h mysql ${ARGS};;';
+        }
+
+        $this->overrides = ['docker' => $requestConfig, 'commands' => $cbConfig];
+    }
 }

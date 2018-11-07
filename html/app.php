@@ -3,163 +3,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $request = json_decode(file_get_contents('php://input'), true);
 
-$requestConfig = $webserverPorts = $webserverVolumes = $databaseEnvvars = [];
-$cbConfig = [
-    'commands' => []
-];
-
-if (!empty($request['php_version'])) {
-    if ($request['php_webserver']) {
-        $requestConfig['httpd'] = [
-            'service' => 'httpd',
-            'build-options' => [
-                'image' => 'php:' . $request['php_version'] . '-apache',
-                'extensions' => $request['php_extensions'],
-                'docroot' => $request['webserver_docroot'],
-            ],
-            'services' => ['httpd' => []
-        ]];
-
-        foreach ($request['webserver_ports'] as $ports) {
-            $webserverPorts[] = $ports['hostPort'] . ':' . $ports['srcPort'];
-        }
-
-        foreach ($request['webserver_mountpoints'] as $volume) {
-            $webserverVolumes[] = $volume['localPath'] . ':' . $volume['containerPath'];
-        }
-
-        if (!empty($webserverPorts)) {
-            $requestConfig['httpd']['services']['httpd']['ports'] = $webserverPorts;
-        }
-
-        if (!empty($webserverVolumes)) {
-            $requestConfig['httpd']['services']['httpd']['volumes'] = $webserverVolumes;
-        }
-    }
-
-    if ($request['cli']) {
-        $requestConfig['php-cli'] = [
-            'service' => 'php',
-            'build-options' => [
-                'image' => 'php:' . $request['php_version'] . '-cli',
-                'extensions' => $request['php_extensions'],
-            ]
-        ];
-        $cbConfig['commands'][] = '"cli") docker-compose run --rm -u $UID php-cli php ${ARGS};;';
-    }
-
-    if ($request['cb_laravel_artisan']) {
-        $cbConfig['commands'][] = '"artisan") docker-compose run --rm -u $UID php-cli php artisan ${ARGS};;';
-    }
-
-    if ($request['cb_symfony_4_console']) {
-        $cbConfig['commands'][] = '"console") docker-compose run --rm -u $UID php-cli php bin/console ${ARGS};;';
-    }
-
-    if ($request['composer']) {
-        $requestConfig['composer'] = [
-            'service' => 'composer',
-            'services' => ['composer' => [
-                'image' => ($request['composer_official'] == 'true') ? 'composer' : 'composer/composer',
-            ]],
-        ];
-        $cbConfig['commands'][] = '"composer") docker-compose run --rm -u $UID composer ${ARGS};;';
-    }
-}
-
-foreach ($request['database_envvars'] as $dbEnvvar) {
-    $databaseEnvvars[$dbEnvvar['name']] =  $dbEnvvar['value'];
-}
-
-if ($request['database_mysql']) {
-    $requestConfig['mysql'] = [
-        'service' => 'mysql',
-        'services' => ['mysql' => [
-            'image' => 'mysql:' . $request['database_mysql_version'],
-            'environment' => $databaseEnvvars
-        ]],
-        'build-options' => ['image' => 'mysql:' . $request['database_mysql_version']],
-    ];
-    $cbConfig['commands'][] = '"mysqlcli") docker-compose run --rm mysql mysql -h mysql ${ARGS};;';
-}
-
-if ($request['database_mongodb']) {
-    $requestConfig['mongodb'] = [
-        'service' => 'mongodb',
-        'services' => ['mongodb' => [
-            'image' => 'mongo:' . $request['database_mongodb_version'],
-        ]],
-        'build-options' => ['image' => 'mongo:' . $request['database_mongodb_version']],
-    ];
-    $cbConfig['commands'][] = '"mongocli") docker-compose run --rm mongodb mongo mongodb://mongodb ${ARGS};;';
-}
-
-if ($request['queue']) {
-    $requestConfig['queue'] = ['service' => 'queue'];
-}
-
-if ($request['cache']) {
-    $requestConfig['cache'] = ['service' => 'cache'];
-}
-
-if ($request['mailhog']) {
-    $requestConfig['mailhog'] = ['service' => 'mailhog'];
-}
-
-if ($request['nodejs_version']) {
-    $nodejsPorts = $nodejsVolumes = [];
-
-    foreach ($request['nodejs_ports'] as $ports) {
-        $nodejsPorts[] = $ports['hostPort'] . ':' . $ports['srcPort'];
-    }
-
-    foreach ($request['nodejs_mountpoints'] as $volume) {
-        $nodejsVolumes[] = $volume['localPath'] . ':' . $volume['containerPath'];
-    }
-
-    $cbConfig['commands'][] = '"node") docker-compose run --rm -u $UID nodejs ${ARGS};;';
-
-    $requestConfig['nodejs'] = [
-        'service' => 'nodejs',
-        'services' => ['nodejs' => [
-            'image' => 'node:' . $request['nodejs_version'],
-            'volumes' => $nodejsVolumes,
-        ]],
-    ];
-
-    if (!empty($nodejsPorts)) {
-        $requestConfig['nodejs']['services']['nodejs']['ports'] = $nodejsPorts;
-    }
-}
-
-if ($request['python_version']) {
-    $pythonPorts = $pythonVolumes = [];
-
-    foreach ($request['python_ports'] as $ports) {
-        $pythonPorts[] = $ports['hostPort'] . ':' . $ports['srcPort'];
-    }
-
-    foreach ($request['python_mountpoints'] as $volume) {
-        $pythonVolumes[] = $volume['localPath'] . ':' . $volume['containerPath'];
-    }
-
-    $cbConfig['commands'][] = '"python") docker-compose run --rm -u $UID python python ${ARGS};;';
-
-    $requestConfig['python'] = [
-        'service' => 'python',
-        'services' => ['python' => [
-            'image' => 'python:' . $request['python_version'],
-            'volumes' => $pythonVolumes,
-        ]],
-    ];
-
-    if (!empty($pythonPorts)) {
-        $requestConfig['python']['services']['python']['ports'] = $pythonPorts;
-    }
-}
-
 $builder = new \ContainerBuilder\ConfigBuilder();
-$config = $builder->generateConfig($requestConfig);
+$config = $builder->generateConfig($request);
 
 $zipfilePath = '/tmp/' . md5(rand() . strtotime('now')) . '.zip';
 $filesystem = new \League\Flysystem\Filesystem(new League\Flysystem\ZipArchive\ZipArchiveAdapter($zipfilePath));
@@ -168,8 +13,14 @@ $res = $filesystem->write('docker-compose.yml', \Symfony\Component\Yaml\Yaml::du
 foreach ($config['files'] as $zipPath => $content) {
    $filesystem->write($zipPath, $content);
 }
+
 $cb = file_get_contents(__DIR__ . '/../data/templates/cb');
-$cb = str_replace('{{ commands }}', implode("\n", $cbConfig['commands']), $cb);
+$commands = '';
+if (!empty($config['commands'])) {
+    $commands = implode("\n", $config['commands']);
+}
+$cb = str_replace('{{ commands }}', $commands, $cb);
+
 $filesystem->write('cb', $cb);
 $filesystem->getAdapter()->getArchive()->close();
 

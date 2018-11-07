@@ -8,8 +8,9 @@ export UID
 
 case ${OPERATION} in
     "build") docker-compose run --rm -u $UID node node_modules/.bin/webpack ui/src/index.js html/js/app.js;;
-    "cli") docker-compose run --rm  -u $UID php-cli php ${ARGS};;
-    "composer") docker-compose run --rm  -u $UID composer ${ARGS};;
-    "npm") docker-compose run --rm  -u $UID node npm ${ARGS};;
+    "cli") docker-compose run --rm -u $UID php-cli php ${ARGS};;
+    "php-unit-tests") docker-compose run --rm -u $UID php-unit-tests vendor/bin/phpunit ${ARGS};;
+    "composer") docker-compose run --rm composer ${ARGS};;
+    "node") docker-compose run --rm -u $UID nodejs ${ARGS};;
     *) echo "Unknown operation: ${OPERATION}";;
 esac

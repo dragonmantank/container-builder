@@ -2,13 +2,24 @@
 
 namespace ContainerBuilder\Service;
 
+use ContainerBuilder\Service\Php;
+use ContainerBuilder\Service\Httpd;
+use ContainerBuilder\Service\Mysql;
+use ContainerBuilder\Service\Redis;
+use ContainerBuilder\Service\NodeJS;
+use ContainerBuilder\Service\Python;
+use ContainerBuilder\Service\Mailhog;
+use ContainerBuilder\Service\MongoDB;
+use ContainerBuilder\Service\Composer;
+use ContainerBuilder\Service\Beanstalkd;
+
 class ServiceFactory
 {
     static protected $services = [
-        'httpd' => 'ContainerBuilder\Service\Httpd',
-        'composer' => 'ContainerBuilder\Service\Composer',
-        'mysql' => 'ContainerBuilder\Service\Mysql',
-        'php' => 'ContainerBuilder\Service\Php',
+        'httpd' => Httpd::class,
+        'composer' => Composer::class,
+        'mysql' => Mysql::class,
+        'php' => Php::class,
         'queue' => Beanstalkd::class,
         'cache' => Redis::class,
         'mailhog' => Mailhog::class,
@@ -17,9 +28,14 @@ class ServiceFactory
         'python' => Python::class,
     ];
 
-    static public function create($service, $config = [])
+    static public function create($service)
     {
-        $class = static::$services[$config['service']];
-        return new $class($config);
+        $class = static::$services[$service];
+        return new $class();
+    }
+
+    static public function getServices()
+    {
+        return static::$services;
     }
 }

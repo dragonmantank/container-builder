@@ -18,4 +18,23 @@ class Composer extends AbstractService
         ]
     ];
     protected $serviceName = 'composer';
+
+    public function processRequest(array $request)
+    {
+        $requestConfig = $cbConfig = [];
+
+        if (!empty($request['php_version'])) {
+            if ($request['composer']) {
+                $requestConfig['composer'] = [
+                    'service' => 'composer',
+                    'services' => ['composer' => [
+                        'image' => ($request['composer_official'] == 'true') ? 'composer' : 'composer/composer',
+                    ]],
+                ];
+                $cbConfig['commands'][] = '"composer") docker-compose run --rm -u $UID composer ${ARGS};;';
+            }
+        }
+
+        $this->overrides = ['docker' => $requestConfig, 'commands' => $cbConfig];
+    }
 }

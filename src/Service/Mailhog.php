@@ -15,4 +15,15 @@ class Mailhog extends AbstractService
         ]
     ];
     protected $serviceName = 'mailhog';
+
+    protected function processRequest(array $request)
+    {
+        $requestConfig = $cbConfig = [];
+
+        if ($request['mailhog']) {
+            $requestConfig['mailhog'] = ['service' => 'mailhog'];
+        }
+
+        $this->overrides = ['docker' => $requestConfig, 'commands' => $cbConfig];
+    }
 }

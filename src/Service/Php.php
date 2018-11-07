@@ -68,4 +68,42 @@ class Php extends AbstractService
         
         return $files;
     }
+
+    protected function processRequest(array $request)
+    {
+        $requestConfig = $cbConfig = [];
+
+        if (!empty($request['php_version'])) {
+            if ($request['cli']) {
+                $requestConfig['php-cli'] = [
+                    'service' => 'php',
+                    'build-options' => [
+                        'image' => 'php:' . $request['php_version'] . '-cli',
+                        'extensions' => $request['php_extensions'],
+                    ]
+                ];
+                $cbConfig[] = '"cli") docker-compose run --rm -u $UID php-cli php ${ARGS};;';
+            }
+        
+            if ($request['cb_laravel_artisan']) {
+                $cbConfig[] = '"artisan") docker-compose run --rm -u $UID php-cli php artisan ${ARGS};;';
+            }
+        
+            if ($request['cb_symfony_4_console']) {
+                $cbConfig[] = '"console") docker-compose run --rm -u $UID php-cli php bin/console ${ARGS};;';
+            }
+        
+            if ($request['composer']) {
+                $requestConfig['composer'] = [
+                    'service' => 'composer',
+                    'services' => ['composer' => [
+                        'image' => ($request['composer_official'] == 'true') ? 'composer' : 'composer/composer',
+                    ]],
+                ];
+                $cbConfig[] = '"composer") docker-compose run --rm -u $UID composer ${ARGS};;';
+            }
+        }
+
+        $this->overrides = ['docker' => $requestConfig, 'commands' => $cbConfig];
+    }
 }

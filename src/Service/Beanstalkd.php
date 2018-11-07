@@ -8,10 +8,21 @@ class Beanstalkd extends AbstractService
     protected $config = [
         'volumes' => [],
         'services' => [
-            'queue' => [
+            'beanstalkd' => [
                 'image' => 'schickling/beanstalkd',
             ]
         ]
     ];
-    protected $serviceName = 'queue';
+    protected $serviceName = 'beanstalkd';
+
+    protected function processRequest(array $request)
+    {
+        $requestConfig = $cbConfig = [];
+
+        if ($request['queue']) {
+            $requestConfig['beanstalkd'] = ['service' => 'beanstalkd'];
+        }
+
+        $this->overrides = ['docker' => $requestConfig, 'commands' => $cbConfig];
+    }
 }

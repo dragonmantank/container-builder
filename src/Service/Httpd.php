@@ -2,7 +2,7 @@
 
 namespace ContainerBuilder\Service;
 
-class Httpd extends AbstractService
+class Httpd extends Php
 {
     protected $versions = ['php:5.6-apache', 'php:7.0-apache', 'php:7.1-apache', 'php:7.2-apache'];
     protected $config = [
@@ -20,46 +20,9 @@ class Httpd extends AbstractService
 
     protected $serviceName = 'httpd';
 
-    /**
-     * Mapping of extensions we support and how we should install them
-     * @var array
-     */
-     protected $extensions = [
-        'pecl' => ['xdebug', 'redis', 'mongodb'],
-        'stock' => [
-            'cmath', 'bz2', 'calendar', 'ctype', 'curl', 'dba', 'dom', 'enchant', 'exif', 'fileinfo', 'filter', 'ftp',
-            'gd', 'gettext', 'gmp', 'hash', 'iconv', 'imap', 'interbase', 'intl', 'json', 'ldap', 'mbstring', 'mcrypt',
-            'mysqli', 'oci8', 'odbc', 'opcache', 'pcntl', 'pdo', 'pdo_dblib', 'pdo_firebird', 'pdo_mysql', 'pdo_oci',
-            'pdo_odbc', 'pdo_pgsql', 'pdo_sqlite', 'pgsql', 'phar', 'posix', 'pspell', 'readline', 'recode',
-            'reflection', 'session', 'shmop', 'simplexml', 'snmp', 'soap', 'sockets', 'spl', 'standard', 'sysvmsg',
-            'sysvsem', 'sysvshm', 'tidy', 'tokenizer', 'wddx', 'xml', 'xmlreader', 'xmlrpc', 'xmlwriter', 'xsl', 'zip'
-        ],
-    ];
-
     public function getFiles()
     {
         $files = parent::getFiles();
-
-        $extensions = 'true';
-        if (isset($this->overrides['build-options'])) {
-            if (isset($this->overrides['build-options']['extensions'])) {
-                $stockExtensions = array_intersect($this->overrides['build-options']['extensions'], $this->extensions['stock']);
-                $peclExtensions = array_intersect($this->overrides['build-options']['extensions'], $this->extensions['pecl']);
-
-                $stockString = 'docker-php-ext-install ' . implode(' ', $stockExtensions);
-                $peclStrings = [];
-                foreach ($peclExtensions as $extension) {
-                    $peclStrings[] = 'pecl install -o -f ' . $extension . ' && docker-php-ext-enable ' . $extension;
-                }
-                $peclString = implode("\ \n&& ", $peclStrings);
-
-                $extensions = '';
-                if (count($stockExtensions)) { $extensions .= $stockString; }
-                if (count($peclExtensions)) {
-                    $extensions .= (strlen($extensions) == 0) ? $peclString : ' && ' . $peclString;
-                }
-            }
-        }
 
         $docroot = $this->overrides['build-options']['docroot'];
         $docrootEscaped = str_replace('/', '\/', $docroot);
@@ -70,5 +33,46 @@ class Httpd extends AbstractService
         );
         
         return $files;
+    }
+
+    protected function processRequest(array $request)
+    {
+        $requestConfig = $cbConfig = [];
+
+        if (!empty($request['php_version'])) {
+            if ($request['php_webserver']) {
+                $requestConfig['httpd'] = [
+                    'service' => 'httpd',
+                    'build-options' => [
+                        'image' => 'php:' . $request['php_version'] . '-apache',
+                        'extensions' => $request['php_extensions'],
+                        'docroot' => $request['webserver_docroot'],
+                    ],
+                    'services' => ['httpd' => []
+                ]];
+        
+                if (array_key_exists('webserver_ports', $request)) {
+                    foreach ($request['webserver_ports'] as $ports) {
+                        $webserverPorts[] = $ports['hostPort'] . ':' . $ports['srcPort'];
+                    }
+                }
+
+                if (array_key_exists('webserver_mountpoints', $request)) {
+                    foreach ($request['webserver_mountpoints'] as $volume) {
+                        $webserverVolumes[] = $volume['localPath'] . ':' . $volume['containerPath'];
+                    }
+                }
+
+                if (!empty($webserverPorts)) {
+                    $requestConfig['httpd']['services']['httpd']['ports'] = $webserverPorts;
+                }
+        
+                if (!empty($webserverVolumes)) {
+                    $requestConfig['httpd']['services']['httpd']['volumes'] = $webserverVolumes;
+                }
+            }
+        }
+
+        $this->overrides = ['docker' => $requestConfig, 'commands' => $cbConfig];
     }
 }

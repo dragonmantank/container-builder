@@ -23,49 +23,40 @@ class NodeJS extends AbstractService
 
     protected $serviceName = 'nodejs';
 
-    /**
-     * Mapping of extensions we support and how we should install them
-     * @var array
-     */
-//    protected $extensions = [
-//        'pecl' => ['xdebug', 'redis'],
-//        'stock' => [
-//            'cmath', 'bz2', 'calendar', 'ctype', 'curl', 'dba', 'dom', 'enchant', 'exif', 'fileinfo', 'filter', 'ftp',
-//            'gd', 'gettext', 'gmp', 'hash', 'iconv', 'imap', 'interbase', 'intl', 'json', 'ldap', 'mbstring', 'mcrypt',
-//            'mysqli', 'oci8', 'odbc', 'opcache', 'pcntl', 'pdo', 'pdo_dblib', 'pdo_firebird', 'pdo_mysql', 'pdo_oci',
-//            'pdo_odbc', 'pdo_pgsql', 'pdo_sqlite', 'pgsql', 'phar', 'posix', 'pspell', 'readline', 'recode',
-//            'reflection', 'session', 'shmop', 'simplexml', 'snmp', 'soap', 'sockets', 'spl', 'standard', 'sysvmsg',
-//            'sysvsem', 'sysvshm', 'tidy', 'tokenizer', 'wddx', 'xml', 'xmlreader', 'xmlrpc', 'xmlwriter', 'xsl', 'zip'
-//        ],
-//    ];
-//
-//    public function getFiles()
-//    {
-//        $files = parent::getFiles();
-//
-//        $extensions = 'true';
-//        if (isset($this->overrides['build-options'])) {
-//            if (isset($this->overrides['build-options']['extensions'])) {
-//                $stockExtensions = array_intersect($this->overrides['build-options']['extensions'], $this->extensions['stock']);
-//                $peclExtensions = array_intersect($this->overrides['build-options']['extensions'], $this->extensions['pecl']);
-//
-//                $stockString = 'docker-php-ext-install ' . implode(' ', $stockExtensions);
-//                $peclStrings = [];
-//                foreach ($peclExtensions as $extension) {
-//                    $peclStrings[] = 'pecl install -o -f ' . $extension . ' && docker-php-ext-enable ' . $extension;
-//                }
-//                $peclString = implode(' && ', $peclStrings);
-//
-//                $extensions = '';
-//                if (count($stockExtensions)) { $extensions .= $stockString; }
-//                if (count($peclExtensions)) {
-//                    $extensions .= (strlen($extensions) == 0) ? $peclString : ' && ' . $peclString;
-//                }
-//            }
-//        }
-//
-//        $files['docker/php/Dockerfile'] = str_replace('{{ extensions }}', $extensions, $files['docker/php/Dockerfile']);
-//
-//        return $files;
-//    }
+    protected function processRequest(array $request)
+    {
+        $requestConfig = $cbConfig = [];
+
+        if ($request['nodejs_version']) {
+            $nodejsPorts = $nodejsVolumes = [];
+
+            if (!empty($request['nodejs_ports'])) {
+                foreach ($request['nodejs_ports'] as $ports) {
+                    $nodejsPorts[] = $ports['hostPort'] . ':' . $ports['srcPort'];
+                }
+            }            
+
+            if (!empty($request['nodejs_mountpoints'])) {
+                foreach ($request['nodejs_mountpoints'] as $volume) {
+                    $nodejsVolumes[] = $volume['localPath'] . ':' . $volume['containerPath'];
+                }
+            }
+
+            $cbConfig['commands'][] = '"node") docker-compose run --rm -u $UID nodejs ${ARGS};;';
+
+            $requestConfig['nodejs'] = [
+                'service' => 'nodejs',
+                'services' => ['nodejs' => [
+                    'image' => 'node:' . $request['nodejs_version'],
+                    'volumes' => $nodejsVolumes,
+                ]],
+            ];
+
+            if (!empty($nodejsPorts)) {
+                $requestConfig['nodejs']['services']['nodejs']['ports'] = $nodejsPorts;
+            }
+        }
+
+        $this->overrides = ['docker' => $requestConfig, 'commands' => $cbConfig];
+    }
 }

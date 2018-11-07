@@ -13,4 +13,22 @@ class MongoDB extends AbstractService
         ]
     ];
     protected $serviceName = 'mongodb';
+
+    protected function processRequest(array $request)
+    {
+        $requestConfig = $cbConfig = [];
+
+        if ($request['database_mongodb']) {
+            $requestConfig['mongodb'] = [
+                'service' => 'mongodb',
+                'services' => ['mongodb' => [
+                    'image' => 'mongo:' . $request['database_mongodb_version'],
+                ]],
+                'build-options' => ['image' => 'mongo:' . $request['database_mongodb_version']],
+            ];
+            $cbConfig['commands'][] = '"mongocli") docker-compose run --rm mongodb mongo mongodb://mongodb ${ARGS};;';
+        }
+
+        $this->overrides = ['docker' => $requestConfig, 'commands' => $cbConfig];
+    }
 }

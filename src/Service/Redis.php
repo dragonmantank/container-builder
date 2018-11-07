@@ -8,10 +8,21 @@ class Redis extends AbstractService
     protected $config = [
         'volumes' => [],
         'services' => [
-            'cache' => [
+            'redis' => [
                 'image' => 'redis',
             ]
         ]
     ];
-    protected $serviceName = 'cache';
+    protected $serviceName = 'redis';
+
+    protected function processRequest(array $request)
+    {
+        $requestConfig = $cbConfig = [];
+
+        if ($request['cache']) {
+            $requestConfig['redis'] = ['service' => 'redis'];
+        }
+
+        $this->overrides = ['docker' => $requestConfig, 'commands' => $cbConfig];
+    }
 }
