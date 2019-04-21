@@ -4,7 +4,14 @@ namespace ContainerBuilder\Service;
 
 class Httpd extends Php
 {
-    protected $versions = ['php:5.6-apache', 'php:7.0-apache', 'php:7.1-apache', 'php:7.2-apache'];
+    protected $versions = [
+		'php:5.6-apache',
+		'php:7.0-apache',
+		'php:7.1-apache',
+		'php:7.2-apache',
+		'php:7.3-apache',
+	];
+
     protected $config = [
         'volumes' => [],
         'services' => [

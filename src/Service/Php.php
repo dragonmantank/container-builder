@@ -4,7 +4,13 @@ namespace ContainerBuilder\Service;
 
 class Php extends AbstractService
 {
-    protected $versions = ['php:5.6-cli', 'php:7.0-cli', 'php:7.1-cli', 'php:7.2-cli'];
+    protected $versions = [
+		'php:5.6-cli',
+		'php:7.0-cli',
+		'php:7.1-cli',
+		'php:7.2-cli',
+		'php:7.3-cli',
+	];
 
     protected $config = [
         'volumes' => [],
