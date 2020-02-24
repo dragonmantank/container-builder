@@ -10,7 +10,7 @@ class PhpTest extends TestCase
     public function testBasicComposeConfigIsCorrect()
     {
         $request = [
-            'php_version' => '7.2',
+            'php_version' => '7.3',
             'cli' => true,
         ];
 
@@ -26,7 +26,7 @@ class PhpTest extends TestCase
     public function testAddsCorrectVolumes()
     {
         $request = [
-            'php_version' => '7.2',
+            'php_version' => '7.3',
             'cli' => true,
         ];
 
